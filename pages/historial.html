@@ -21,18 +21,84 @@
     <main class="main-panel">
         <h1 class="text-2xl font-bold">Historial Médico</h1>
         <p>Todavia me falta...</p>
+        <!-- el buscador -->
+        <div class="top-bar">
+            <div class="search-wrap">
+                <span>🔍</span>
+                <input type="text" placeholder="Buscar consulta.......">
+            </div>
+        </div>
+        
+        <!-- historial -->
+        <div class="section-title">📁 Historial de Consultas</div>
+
+        <div class="appointments-table">
+        <table>
+            <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Doctor</th>
+                <th>Especialidad</th>
+                <th>Motivo</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>12/04/2026</td>
+                <td>Dra. Laura Méndez</td>
+                <td>Medicina General</td>
+                <td>Dolor de cabeza</td>
+            </tr>
+            <tr>
+                <td>03/03/2026</td>
+                <td>Dr. Ricardo Soto</td>
+                <td>Cardiología</td>
+                <td>Chequeo cardíaco</td>
+            </tr>
+            </tbody>
+        </table>
+        </div>
+
+        <div class="section-title">💊 Diagnósticos y Recetas</div>
+
+        <div class="appointments-table">
+        <table>
+            <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Diagnóstico</th>
+                <th>Receta</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>12/04/2026</td>
+                <td>Migraña leve</td>
+                <td>Paracetamol 500mg cada 8h</td>
+            </tr>
+            <tr>
+                <td>03/03/2026</td>
+                <td>Arritmia leve</td>
+                <td>Control mensual + dieta baja en sodio</td>
+            </tr>
+            </tbody>
+        </table>
+        </div>
+
+
+
     </main>
 
     </div>
 
-    <!-- SCRIPT -->
+    <!-- SCRIPT para llamar al sidebar-->
     <script>
     fetch('../components/sidebar.html')
     .then(res => res.text())
     .then(data => {
         document.getElementById('sidebar-container').innerHTML = data;
     })
-    .catch(error => console.error("Error cargando sidebar:", error));
+    .catch(error => console.error("OJO hay un error en la carga del sidebar:", error));
     </script>
 
 </body>
