@@ -15,7 +15,7 @@
   <!-- SIDEBAR -->
   <div id="sidebar-container"></div>
 
-  <!-- MAIN -->
+  <!-- MAIN.................................................... -->
   <main class="main-panel">
 
     <!-- TOP BAR -->
@@ -36,28 +36,42 @@
       <div class="form-row">
         <div class="form-group">
           <label>Nombre completo</label>
+          <!-- 
           <input type="text" value="Elvis Soto">
+          -->
+          <input type="text" id="nombre">
+
         </div>
 
         <div class="form-group">
           <label>Email</label>
+          <!-- 
           <input type="email" value="elvis.soto@gmail.com">
+          -->
+          <input type="text" id="email">
         </div>
       </div>
 
       <div class="form-row">
         <div class="form-group">
           <label>Telefono</label>
+          <!--
           <input type="text" value="987654321">
+          -->
+          <input type="text" id="telefono">
         </div>
 
         <div class="form-group">
           <label>Dirección</label>
-          <input type="text" value="Arequipa, Perú">
+          <!--<input type="text" value="Arequipa, Perú">-->
+          <input type="text" id="direccion">
         </div>
       </div>
 
-      <button class="btn-submit">💾 Guardar cambios</button>
+      <!--<button class="btn-submit">💾 Guardar cambios</button>-->
+    
+      <button id="btnGuardar" class="btn-submit">💾 Guardar cambios</button>
+
     </div>
 
     <!-- CONFIGURACION Y MODIFICACION DE LAS CONTRASEÑAS -->
@@ -79,36 +93,167 @@
       <button class="btn-submit">🔐 Actualizar contraseña</button>
     </div>
 
+
+    <!--//Formulario-->
+    <div class="section-title">➕ Nueva Consulta</div>
+    <div class="form-card">
+    <div class="form-row">
+        <div class="form-group">
+        <label>Fecha</label>
+        <input type="date" id="fecha">
+        </div>
+
+        <div class="form-group">
+        <label>Doctor</label>
+        <input type="text" id="doctor">
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+        <label>Diagnóstico</label>
+        <input type="text" id="diagnostico">
+        </div>
+
+        <div class="form-group">
+        <label>Receta</label>
+        <input type="text" id="receta">
+        </div>
+    </div>
+
+    <button id="btnAgregar" class="btn-submit">➕ Agregar consulta</button>
+    </div>
+
+    <!-- Tabla-->
+     <div class="section-title">📋 Historial de Consultas</div>
+
+    <div class="appointments-table">
+    <table>
+        <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Doctor</th>
+            <th>Diagnóstico</th>
+            <th>Receta</th>
+        </tr>
+        </thead>
+        <tbody id="tablaHistorial">
+        </tbody>
+    </table>
+    </div>
+
+
+
+
   </main>
 
 </div>
 
+
+
 <!-- SIDEBAR SCRIPT -->
 <script>
-fetch('../components/sidebar.html')
-  .then(res => res.text())
-  .then(data => {
-    document.getElementById('sidebar-container').innerHTML = data;
-    
-    // ACTIVAR BOTÓN PARA QUE ESTE SEGUN LA URL PERFIL O HISTORIAL
-    const currentPage = window.location.pathname;
 
-    const buttons = document.querySelectorAll('.nav-btn');
+    // SIDEBAR SCRIPT
+    fetch('../components/sidebar.html')
+    .then(res => res.text())
+    .then(data => {
+        document.getElementById('sidebar-container').innerHTML = data;
+        
+        // ACTIVAR BOTÓN PARA QUE ESTE SEGUN LA URL PERFIL O HISTORIAL
+        const currentPage = window.location.pathname;
 
-    buttons.forEach(btn => {
-      btn.classList.remove('active');
+        const buttons = document.querySelectorAll('.nav-btn');
 
-      if (currentPage.includes('historial.html') && btn.innerText.includes('Historial')) {
-        btn.classList.add('active');
-      }
+        buttons.forEach(btn => {
+        btn.classList.remove('active');
 
-      if (currentPage.includes('perfil.html') && btn.innerText.includes('Perfil')) {
-        btn.classList.add('active');
-      }
+        if (currentPage.includes('historial.html') && btn.innerText.includes('Historial')) {
+            btn.classList.add('active');
+        }
+
+        if (currentPage.includes('perfil.html') && btn.innerText.includes('Perfil')) {
+            btn.classList.add('active');
+        }
+        });
+
     });
-  
-  
-  });
+
+
+    // CARGAR DATOS GUARDADOS (AL RECARGAR LA PAGINA)
+    window.addEventListener("DOMContentLoaded", () => {
+    const datos = JSON.parse(localStorage.getItem("perfil"));
+
+    if (datos) {
+        document.getElementById("nombre").value = datos.nombre || "";
+        document.getElementById("email").value = datos.email || "";
+        document.getElementById("telefono").value = datos.telefono || "";
+        document.getElementById("direccion").value = datos.direccion || "";
+    }
+    });
+
+
+    // GUARDAR DATOS (AL HACER CLICK EN BOTON)
+    document.getElementById("btnGuardar").addEventListener("click", () => {
+
+    const perfil = {
+        nombre: document.getElementById("nombre").value,
+        email: document.getElementById("email").value,
+        telefono: document.getElementById("telefono").value,
+        direccion: document.getElementById("direccion").value
+    };
+
+    localStorage.setItem("perfil", JSON.stringify(perfil));
+
+    alert("✅ Datos guardados correctamente");
+    });
+
+    // CARGAR HISTORIAL
+    function cargarHistorial() {
+    const datos = JSON.parse(localStorage.getItem("historial")) || [];
+    const tabla = document.getElementById("tablaHistorial");
+
+    tabla.innerHTML = "";
+
+    datos.forEach(item => {
+        const fila = `
+        <tr>
+            <td>${item.fecha}</td>
+            <td>${item.doctor}</td>
+            <td>${item.diagnostico}</td>
+            <td>${item.receta}</td>
+        </tr>
+        `;
+        tabla.innerHTML += fila;
+    });
+    }
+
+
+    // AGREGAR CONSULTA
+    document.getElementById("btnAgregar").addEventListener("click", () => {
+
+    const nuevaConsulta = {
+        fecha: document.getElementById("fecha").value,
+        doctor: document.getElementById("doctor").value,
+        diagnostico: document.getElementById("diagnostico").value,
+        receta: document.getElementById("receta").value
+    };
+
+    let historial = JSON.parse(localStorage.getItem("historial")) || [];
+
+    historial.push(nuevaConsulta);
+
+    localStorage.setItem("historial", JSON.stringify(historial));
+
+    alert("✅ Consulta agregada");
+
+    cargarHistorial();
+    });
+
+    // CARGAR AL INICIAR
+    window.addEventListener("DOMContentLoaded", cargarHistorial);
+
+
 </script>
 
 </body>
