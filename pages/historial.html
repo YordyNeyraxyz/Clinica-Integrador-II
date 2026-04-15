@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Historial Médico</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link rel="stylesheet" href="../assets/css/styles.css">
+  
+
+
+</head>
+
+<body>
+    <div class="app-container">
+
+    <!-- SIDEBAR -->
+    <div id="sidebar-container"></div>
+
+    <!-- MAIN -->
+    <main class="main-panel">
+        <h1 class="text-2xl font-bold">Historial Médico</h1>
+        <p>Todavia me falta...</p>
+    </main>
+
+    </div>
+
+    <!-- SCRIPT -->
+    <script>
+    fetch('../components/sidebar.html')
+    .then(res => res.text())
+    .then(data => {
+        document.getElementById('sidebar-container').innerHTML = data;
+    })
+    .catch(error => console.error("Error cargando sidebar:", error));
+    </script>
+
+</body>
+
+</html>
