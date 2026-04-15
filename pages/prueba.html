@@ -1,0 +1,25 @@
+<script>
+fetch('../components/sidebar.html')
+  .then(res => res.text())
+  .then(data => {
+    document.getElementById('sidebar-container').innerHTML = data;
+
+    // ACTIVAR BOTÓN SEGÚN URL
+    const currentPage = window.location.pathname;
+
+    const buttons = document.querySelectorAll('.nav-btn');
+
+    buttons.forEach(btn => {
+      btn.classList.remove('active');
+
+      if (currentPage.includes('historial.html') && btn.innerText.includes('Historial')) {
+        btn.classList.add('active');
+      }
+
+      if (currentPage.includes('perfil.html') && btn.innerText.includes('Perfil')) {
+        btn.classList.add('active');
+      }
+    });
+
+  });
+</script>

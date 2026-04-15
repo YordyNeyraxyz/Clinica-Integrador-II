@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Perfil Usuario</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+
+<body>
+
+<div class="app-container">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar-container"></div>
+
+  <!-- MAIN -->
+  <main class="main-panel">
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+      <div class="search-wrap">
+        <span>🔍</span>
+        <input type="text" placeholder="Buscar...">
+      </div>
+    </div>
+
+    <!-- TITULO DE PERFIL -->
+    <h1 class="text-2xl font-bold mb-4">👤 Perfil de Usuario</h1>
+
+    <!-- DATOS PERSONALES DE USUARIO -->
+    <div class="section-title">Datos personales</div>
+
+    <div class="form-card">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nombre completo</label>
+          <input type="text" value="Elvis Soto">
+        </div>
+
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" value="elvis.soto@gmail.com">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Telefono</label>
+          <input type="text" value="987654321">
+        </div>
+
+        <div class="form-group">
+          <label>Dirección</label>
+          <input type="text" value="Arequipa, Perú">
+        </div>
+      </div>
+
+      <button class="btn-submit">💾 Guardar cambios</button>
+    </div>
+
+    <!-- CONFIGURACION Y MODIFICACION DE LAS CONTRASEÑAS -->
+    <div class="section-title">Configuración</div>
+
+    <div class="form-card">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nueva contraseña</label>
+          <input type="password" placeholder="***************">
+        </div>
+
+        <div class="form-group">
+          <label>Confirmar contraseña</label>
+          <input type="password" placeholder="********">
+        </div>
+      </div>
+
+      <button class="btn-submit">🔐 Actualizar contraseña</button>
+    </div>
+
+  </main>
+
+</div>
+
+<!-- SIDEBAR SCRIPT -->
+<script>
+fetch('../components/sidebar.html')
+  .then(res => res.text())
+  .then(data => {
+    document.getElementById('sidebar-container').innerHTML = data;
+    
+    // ACTIVAR BOTÓN PARA QUE ESTE SEGUN LA URL PERFIL O HISTORIAL
+    const currentPage = window.location.pathname;
+
+    const buttons = document.querySelectorAll('.nav-btn');
+
+    buttons.forEach(btn => {
+      btn.classList.remove('active');
+
+      if (currentPage.includes('historial.html') && btn.innerText.includes('Historial')) {
+        btn.classList.add('active');
+      }
+
+      if (currentPage.includes('perfil.html') && btn.innerText.includes('Perfil')) {
+        btn.classList.add('active');
+      }
+    });
+  
+  
+  });
+</script>
+
+</body>
+</html>

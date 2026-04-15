@@ -97,6 +97,25 @@
     .then(res => res.text())
     .then(data => {
         document.getElementById('sidebar-container').innerHTML = data;
+    
+        // ACTIVAR BOTÓN PARA QUE ESTE SEGUN LA URL PERFIL O HISTORIAL
+        const currentPage = window.location.pathname;
+
+        const buttons = document.querySelectorAll('.nav-btn');
+
+        buttons.forEach(btn => {
+        btn.classList.remove('active');
+
+        if (currentPage.includes('historial.html') && btn.innerText.includes('Historial')) {
+            btn.classList.add('active');
+        }
+
+        if (currentPage.includes('perfil.html') && btn.innerText.includes('Perfil')) {
+            btn.classList.add('active');
+        }
+        });
+
+
     })
     .catch(error => console.error("OJO hay un error en la carga del sidebar:", error));
     </script>
