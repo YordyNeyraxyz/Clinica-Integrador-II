@@ -1,19 +1,21 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, from, switchMap } from 'rxjs';
+import { Auth, GoogleAuthProvider, signInWithPopup } from '@angular/fire/auth';
 
 export interface LoginResponse {
     success: boolean;
-    isFirstLogin: boolean;
     token: string;
     user: {
-        id: string;
-        email: string;
-        name?: string;
-        role: string;
+        id: number;
         firebaseUid: string;
-        dni?: string;
-        age?: number;
+        email: string;
+        name: string;
+        dni?: string | null;
+        age?: number | null;
+        role: string;
+        createdAt?: string;
+        updatedAt?: string;
     };
 }
 
@@ -43,34 +45,54 @@ export interface CompleteProfileData {
     providedIn: 'root'
 })
 export class AuthService {
+
     private apiUrl = 'http://localhost:3000/api';
 
-    constructor(private http: HttpClient) { }
+    constructor(
+        private http: HttpClient,
+        private auth: Auth
+    ) { }
 
-    // Login con Google
     loginWithGoogle(): Observable<LoginResponse> {
-        // En Angular, primero obtienes el token de Firebase y lo envías al backend
-        // Por ahora simulamos la llamada
-        return this.http.post<LoginResponse>(`${this.apiUrl}/auth/google`, {});
+
+        const provider = new GoogleAuthProvider();
+
+        return from(signInWithPopup(this.auth, provider)).pipe(
+
+            switchMap(async (credential) => {
+
+                const idToken = await credential.user.getIdToken();
+
+                return idToken;
+            }),
+
+            switchMap((idToken) =>
+                this.http.post<LoginResponse>(
+                    `${this.apiUrl}/auth/google`,
+                    { idToken }
+                )
+            )
+        );
     }
 
-    // Completar perfil para primer registro
     completeProfile(data: CompleteProfileData): Observable<CompleteProfileResponse> {
-        return this.http.post<CompleteProfileResponse>(`${this.apiUrl}/auth/complete-profile`, data);
+        return this.http.post<CompleteProfileResponse>(
+            `${this.apiUrl}/auth/complete-profile`,
+            data
+        );
     }
 
-    // Cerrar sesión
-    logout(): void {
+    async logout(): Promise<void> {
+        await this.auth.signOut();
+
         localStorage.removeItem('token');
         localStorage.removeItem('user');
     }
 
-    // Verificar si está autenticado
     isAuthenticated(): boolean {
         return !!localStorage.getItem('token');
     }
 
-    // Obtener usuario actual
     getCurrentUser(): any {
         const user = localStorage.getItem('user');
         return user ? JSON.parse(user) : null;

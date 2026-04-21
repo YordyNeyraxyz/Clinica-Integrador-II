@@ -1,6 +1,6 @@
 <div class="app-wrapper">
-  <!-- Navbar -->
-  <nav class="navbar">
+  <!-- Navbar - solo visible cuando showNavbarFooter es true -->
+  <nav class="navbar" *ngIf="showNavbarFooter">
     <div class="nav-container">
       <div class="nav-brand">
         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -43,8 +43,8 @@
     <router-outlet></router-outlet>
   </main>
 
-  <!-- Footer -->
-  <footer class="footer">
+  <!-- Footer - solo visible cuando showNavbarFooter es true -->
+  <footer class="footer" *ngIf="showNavbarFooter">
     <div class="footer-container">
       <div class="footer-grid">
         <div class="footer-section">

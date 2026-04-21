@@ -39,17 +39,23 @@ export class LoginComponent {
     try {
       const response = await firstValueFrom(this.authService.loginWithGoogle());
 
-      if (response && response.isFirstLogin) {
-        // Guardar datos de Google para completar perfil
-        this.profileData.email = response.user?.email || '';
-        this.profileData.name = response.user?.name || '';
-        this.profileData.firebaseUid = response.user?.firebaseUid || '';
-        this.showProfileModal = true;
-      } else if (response && response.token) {
-        // Usuario existe, redirigir al dashboard
-        localStorage.setItem('token', response.token);
-        localStorage.setItem('user', JSON.stringify(response.user));
-        this.router.navigate(['/dashboard']);
+      // Ahora verificamos success y token
+      if (response && response.success && response.token) {
+        // Verificar si el usuario ya tiene perfil completo (tiene DNI y edad)
+        const hasCompleteProfile = response.user?.dni && response.user?.age;
+
+        if (hasCompleteProfile) {
+          // Usuario ya existe y tiene perfil completo
+          localStorage.setItem('token', response.token);
+          localStorage.setItem('user', JSON.stringify(response.user));
+          this.router.navigate(['/dashboard']);
+        } else {
+          // Primer registro - mostrar modal para completar datos
+          this.profileData.email = response.user?.email || '';
+          this.profileData.name = response.user?.name || '';
+          this.profileData.firebaseUid = response.user?.firebaseUid || '';
+          this.showProfileModal = true;
+        }
       } else {
         this.errorMessage = 'Respuesta inválida del servidor';
       }
@@ -60,7 +66,7 @@ export class LoginComponent {
       this.isLoading = false;
     }
   }
-
+  
   // Completar perfil (primer registro)
   async completeProfile(): Promise<void> {
     // Validaciones
@@ -83,10 +89,9 @@ export class LoginComponent {
     this.errorMessage = '';
 
     try {
-      // Crear un objeto que cumpla con CompleteProfileData
       const dataToSend: CompleteProfileData = {
         dni: this.profileData.dni,
-        age: this.profileData.age, // Ahora age no puede ser null porque ya validamos
+        age: this.profileData.age,
         email: this.profileData.email,
         name: this.profileData.name,
         firebaseUid: this.profileData.firebaseUid
@@ -94,7 +99,7 @@ export class LoginComponent {
 
       const response = await firstValueFrom(this.authService.completeProfile(dataToSend));
 
-      if (response && response.token) {
+      if (response && response.success && response.token) {
         // Guardar token y datos del usuario
         localStorage.setItem('token', response.token);
         localStorage.setItem('user', JSON.stringify(response.user));
