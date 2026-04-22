@@ -1,1 +1,238 @@
-<p>dashboard-paciente works!</p>
+<div class="dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                    <path
+                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm0 13c-2.33 0-4.31-1.46-5.11-3.5h10.22c-.8 2.04-2.78 3.5-5.11 3.5z"
+                        fill="#FFFFFF" />
+                </svg>
+                <span>MEDITEK</span>
+            </div>
+            <p class="patient-badge">{{ patientName }}</p>
+        </div>
+
+        <nav class="sidebar-nav">
+            <button (click)="changeTab('appointments')" [class.active]="activeTab === 'appointments'">
+                <span class="icon">📅</span>
+                <span>Mis Citas</span>
+            </button>
+            <button (click)="changeTab('calendar')" [class.active]="activeTab === 'calendar'">
+                <span class="icon">📆</span>
+                <span>Calendario</span>
+            </button>
+        </nav>
+
+        <button class="logout-btn" (click)="logout()">
+            <span class="icon">🚪</span>
+            <span>Cerrar Sesión</span>
+        </button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="top-bar">
+            <h2>{{ activeTab === 'appointments' ? 'Mis Citas Médicas' : 'Calendario de Tratamiento' }}</h2>
+            <div class="user-info">
+                <span class="user-name">{{ patientName }}</span>
+            </div>
+        </header>
+
+        <!-- CITAS MÉDICAS -->
+        <div *ngIf="activeTab === 'appointments'" class="tab-content">
+            <div class="section-header">
+                <button class="btn-primary" (click)="openAppointmentModal()">
+                    + Reservar Cita
+                </button>
+            </div>
+
+            <!-- Recordatorios -->
+            <div class="reminders-card" *ngIf="medicalReminders.length > 0">
+                <h3>📢 Recordatorios</h3>
+                <ul>
+                    <li *ngFor="let reminder of medicalReminders">{{ reminder }}</li>
+                </ul>
+            </div>
+
+            <!-- Lista de citas -->
+            <div class="appointments-list">
+                <div class="appointment-card" *ngFor="let appointment of appointments">
+                    <div class="appointment-header">
+                        <div class="doctor-info">
+                            <strong>👨‍⚕️ {{ appointment.doctorName }}</strong>
+                            <span class="specialty">{{ appointment.specialtyName }}</span>
+                        </div>
+                        <span class="status-badge" [class]="getStatusClass(appointment.status)">
+                            {{ getStatusText(appointment.status) }}
+                        </span>
+                    </div>
+                    <div class="appointment-body">
+                        <p><span>📅</span> Fecha: {{ appointment.date | date:'dd/MM/yyyy' }}</p>
+                        <p><span>⏰</span> Hora: {{ appointment.time }}</p>
+                        <p><span>📝</span> Motivo: {{ appointment.reason || 'Consulta general' }}</p>
+                    </div>
+                    <div class="appointment-actions"
+                        *ngIf="appointment.status !== 'cancelled' && appointment.status !== 'completed'">
+                        <button class="btn-outline" (click)="openRescheduleModal(appointment)">🔄 Reprogramar</button>
+                        <button class="btn-danger" (click)="cancelAppointment(appointment)">❌ Cancelar</button>
+                    </div>
+                </div>
+                <div *ngIf="appointments.length === 0" class="empty-state">
+                    <p>No tienes citas agendadas</p>
+                    <button class="btn-primary" (click)="openAppointmentModal()">Reservar primera cita</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CALENDARIO DE TRATAMIENTO -->
+        <div *ngIf="activeTab === 'calendar'" class="tab-content">
+            <!-- Próximas citas -->
+            <div class="calendar-section">
+                <h3>📅 Próximas Citas</h3>
+                <div class="upcoming-list">
+                    <div class="upcoming-item" *ngFor="let apt of upcomingAppointments">
+                        <div class="upcoming-date">
+                            <span class="day">{{ apt.date | date:'dd' }}</span>
+                            <span class="month">{{ apt.date | date:'MMM' }}</span>
+                        </div>
+                        <div class="upcoming-info">
+                            <strong>{{ apt.doctorName }}</strong>
+                            <span>{{ apt.specialtyName }}</span>
+                            <span>🕐 {{ apt.time }}</span>
+                        </div>
+                    </div>
+                    <div *ngIf="upcomingAppointments.length === 0" class="empty-small">
+                        No hay citas próximas
+                    </div>
+                </div>
+            </div>
+
+            <!-- Medicamentos diarios -->
+            <div class="calendar-section">
+                <h3>💊 Medicamentos de Hoy</h3>
+                <div class="medications-list">
+                    <div class="medication-item" *ngFor="let med of dailyMedications">
+                        <div class="med-time">
+                            <span class="time-badge">{{ med.time }}</span>
+                        </div>
+                        <div class="med-info">
+                            <strong>{{ med.medicationName }}</strong>
+                            <span>{{ med.dosage }}</span>
+                            <span class="schedule">{{ med.schedule }}</span>
+                        </div>
+                    </div>
+                    <div *ngIf="dailyMedications.length === 0" class="empty-small">
+                        No tienes medicamentos para tomar hoy
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tratamientos activos -->
+            <div class="calendar-section">
+                <h3>📋 Tratamientos Activos</h3>
+                <div class="treatments-list">
+                    <div class="treatment-item" *ngFor="let treatment of treatments">
+                        <div class="treatment-header">
+                            <strong>{{ treatment.description }}</strong>
+                            <span class="treatment-dates">
+                                {{ treatment.startDate | date:'dd/MM/yyyy' }} - {{ treatment.endDate | date:'dd/MM/yyyy'
+                                }}
+                            </span>
+                        </div>
+                        <div class="treatment-medications">
+                            <span *ngFor="let med of treatment.medications">
+                                💊 {{ med.name }} ({{ med.dosage }})
+                            </span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" [style.width.%]="getTreatmentProgress(treatment)"></div>
+                        </div>
+                    </div>
+                    <div *ngIf="treatments.length === 0" class="empty-small">
+                        No tienes tratamientos activos
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- MODAL RESERVAR CITA -->
+<div class="modal" *ngIf="showAppointmentModal" (click)="closeModalOnBackdrop($event, 'appointment')">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Reservar Cita Médica</h3>
+            <button class="close-btn" (click)="closeAppointmentModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Especialidad / Doctor</label>
+                <select [(ngModel)]="appointmentForm.doctorId" class="form-control">
+                    <option [ngValue]="null">Seleccionar doctor</option>
+                    <option *ngFor="let doctor of availableDoctors" [value]="doctor.id">
+                        {{ doctor.specialtyName }} - {{ doctor.name }}
+                    </option>
+                </select>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Fecha</label>
+                    <input type="date" [(ngModel)]="appointmentForm.date" class="form-control" min="{{ todayDate() }}">
+                </div>
+                <div class="form-group">
+                    <label>Hora</label>
+                    <select [(ngModel)]="appointmentForm.time" class="form-control">
+                        <option value="">Seleccionar hora</option>
+                        <option value="09:00">09:00 AM</option>
+                        <option value="10:00">10:00 AM</option>
+                        <option value="11:00">11:00 AM</option>
+                        <option value="14:00">02:00 PM</option>
+                        <option value="15:00">03:00 PM</option>
+                        <option value="16:00">04:00 PM</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Motivo de la consulta</label>
+                <textarea [(ngModel)]="appointmentForm.reason" class="form-control" rows="3"
+                    placeholder="Describa el motivo de su consulta"></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" (click)="closeAppointmentModal()">Cancelar</button>
+            <button class="btn-primary" (click)="saveAppointment()">Reservar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL REPROGRAMAR CITA -->
+<div class="modal" *ngIf="showRescheduleModal" (click)="closeModalOnBackdrop($event, 'reschedule')">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Reprogramar Cita</h3>
+            <button class="close-btn" (click)="closeRescheduleModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Nueva Fecha</label>
+                <input type="date" [(ngModel)]="rescheduleDate" class="form-control" min="{{ todayDate() }}">
+            </div>
+            <div class="form-group">
+                <label>Nueva Hora</label>
+                <select [(ngModel)]="rescheduleTime" class="form-control">
+                    <option value="09:00">09:00 AM</option>
+                    <option value="10:00">10:00 AM</option>
+                    <option value="11:00">11:00 AM</option>
+                    <option value="14:00">02:00 PM</option>
+                    <option value="15:00">03:00 PM</option>
+                    <option value="16:00">04:00 PM</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" (click)="closeRescheduleModal()">Cancelar</button>
+            <button class="btn-primary" (click)="confirmReschedule()">Confirmar</button>
+        </div>
+    </div>
+</div>
