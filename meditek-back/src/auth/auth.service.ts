@@ -19,6 +19,8 @@ export class AuthService {
 
         if (!user) {
             return {
+                success: true,
+                token: 'fake-jwt-temporal',
                 isFirstLogin: true,
                 user: {
                     firebaseUid: uid,
