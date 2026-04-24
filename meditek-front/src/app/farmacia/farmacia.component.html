@@ -1,0 +1,138 @@
+<div class="farmacia-container">
+    <!-- Header -->
+    <header class="farmacia-header">
+        <div class="header-content">
+            <div class="logo">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                    <path
+                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm0 13c-2.33 0-4.31-1.46-5.11-3.5h10.22c-.8 2.04-2.78 3.5-5.11 3.5z"
+                        fill="#0A6E5E" />
+                </svg>
+                <span>MEDITEK Farmacia</span>
+            </div>
+            <div class="header-actions">
+                <button class="cart-button" (click)="toggleCart()">
+                    🛒 Carrito
+                    <span class="cart-count" *ngIf="getCartItemCount() > 0">{{ getCartItemCount() }}</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Search Bar -->
+    <div class="search-section">
+        <div class="search-box">
+            <input type="text" [(ngModel)]="searchTerm" (input)="filterProducts()"
+                placeholder="Buscar medicamentos o productos..." class="search-input">
+            <span class="search-icon">🔍</span>
+        </div>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="products-section">
+        <div class="products-grid">
+            <div class="product-card" *ngFor="let product of filteredProducts">
+                <div class="product-icon">💊</div>
+                <h3>{{ product.name }}</h3>
+                <p class="product-description">{{ product.description }}</p>
+                <div class="product-footer">
+                    <div class="price-stock">
+                        <span class="price">{{ formatPrice(product.price) }}</span>
+                        <span class="stock" [class.low-stock]="product.stock < 10">
+                            📦 {{ product.stock }} unidades
+                        </span>
+                    </div>
+                    <button class="btn-add" (click)="addToCart(product)" [disabled]="product.stock === 0">
+                        {{ product.stock === 0 ? 'Agotado' : 'Agregar' }}
+                    </button>
+                </div>
+            </div>
+            <div *ngIf="filteredProducts.length === 0" class="empty-state">
+                <p>No se encontraron productos</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-sidebar" [class.open]="showCart">
+        <div class="cart-header">
+            <h3>Mi Carrito</h3>
+            <button class="close-cart" (click)="toggleCart()">✕</button>
+        </div>
+        <div class="cart-items">
+            <div class="cart-item" *ngFor="let item of cart; let i = index">
+                <div class="item-info">
+                    <strong>{{ item.product.name }}</strong>
+                    <span>{{ formatPrice(item.product.price) }}</span>
+                </div>
+                <div class="item-controls">
+                    <input type="number" [value]="item.quantity" (change)="updateQuantity(i, $any($event.target).value)"
+                        min="1" [max]="item.product.stock" class="quantity-input">
+                    <button class="remove-item" (click)="removeFromCart(i)">🗑️</button>
+                </div>
+            </div>
+            <div *ngIf="cart.length === 0" class="empty-cart">
+                <p>🛒 Carrito vacío</p>
+            </div>
+        </div>
+        <div class="cart-footer" *ngIf="cart.length > 0">
+            <div class="cart-total">
+                <strong>Total:</strong>
+                <span>{{ formatPrice(getCartTotal()) }}</span>
+            </div>
+            <button class="btn-checkout" (click)="openCheckout()">Proceder al Pago</button>
+            <button class="btn-clear" (click)="clearCart()">Vaciar Carrito</button>
+        </div>
+    </div>
+
+    <!-- Overlay -->
+    <div class="overlay" *ngIf="showCart" (click)="toggleCart()"></div>
+
+    <!-- Modal Checkout -->
+    <div class="modal" *ngIf="showCheckoutModal" (click)="closeModalOnBackdrop($event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Finalizar Pedido</h3>
+                <button class="close-btn" (click)="closeCheckout()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="order-summary">
+                    <h4>Resumen del pedido</h4>
+                    <div class="summary-items">
+                        <div *ngFor="let item of cart" class="summary-item">
+                            <span>{{ item.quantity }}x {{ item.product.name }}</span>
+                            <span>{{ formatPrice(item.product.price * item.quantity) }}</span>
+                        </div>
+                    </div>
+                    <div class="summary-total">
+                        <strong>Total: {{ formatPrice(getCartTotal()) }}</strong>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Nombre completo</label>
+                    <input type="text" [(ngModel)]="checkoutForm.name" class="form-control"
+                        placeholder="Ingrese su nombre">
+                </div>
+                <div class="form-group">
+                    <label>Correo electrónico</label>
+                    <input type="email" [(ngModel)]="checkoutForm.email" class="form-control"
+                        placeholder="correo@ejemplo.com">
+                </div>
+                <div class="form-group">
+                    <label>Teléfono</label>
+                    <input type="tel" [(ngModel)]="checkoutForm.phone" class="form-control" placeholder="987654321">
+                </div>
+                <div class="form-group">
+                    <label>Dirección de entrega</label>
+                    <textarea [(ngModel)]="checkoutForm.address" class="form-control" rows="3"
+                        placeholder="Ingrese su dirección completa"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" (click)="closeCheckout()">Cancelar</button>
+                <button class="btn-primary" (click)="processCheckout()">Confirmar Pedido</button>
+            </div>
+        </div>
+    </div>
+</div>
