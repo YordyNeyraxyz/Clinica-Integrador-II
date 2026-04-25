@@ -1,0 +1,323 @@
+<div class="dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                    <path
+                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm0 13c-2.33 0-4.31-1.46-5.11-3.5h10.22c-.8 2.04-2.78 3.5-5.11 3.5z"
+                        fill="#FFFFFF" />
+                </svg>
+                <span>MEDITEK</span>
+            </div>
+            <p class="admin-badge">Administrador</p>
+        </div>
+
+        <nav class="sidebar-nav">
+            <button (click)="changeTab('specialties')" [class.active]="activeTab === 'specialties'">
+                <span class="icon">🏥</span>
+                <span>Especialidades</span>
+            </button>
+            <button (click)="changeTab('doctors')" [class.active]="activeTab === 'doctors'">
+                <span class="icon">👨‍⚕️</span>
+                <span>Doctores</span>
+            </button>
+            <button (click)="changeTab('pharmacy')" [class.active]="activeTab === 'pharmacy'">
+                <span class="icon">💊</span>
+                <span>Farmacia</span>
+            </button>
+            <button (click)="changeTab('analytics')" [class.active]="activeTab === 'analytics'">
+                <span class="icon">📊</span>
+                <span>Analytics</span>
+            </button>
+        </nav>
+
+        <button class="logout-btn" (click)="logout()">
+            <span class="icon">🚪</span>
+            <span>Cerrar Sesión</span>
+        </button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="top-bar">
+            <h2>{{ activeTab === 'specialties' ? 'Gestión de Especialidades' :
+                activeTab === 'doctors' ? 'Gestión de Doctores' :
+                activeTab === 'pharmacy' ? 'Gestión de Farmacia' : 'Análisis y Estadísticas' }}</h2>
+            <div class="user-info">
+                <span class="user-name">{{ adminName }}</span>
+            </div>
+        </header>
+
+        <!-- ESPECIALIDADES -->
+        <div *ngIf="activeTab === 'specialties'" class="tab-content">
+            <div class="section-header">
+                <button class="btn-primary" (click)="openSpecialtyModal()">
+                    + Nueva Especialidad
+                </button>
+            </div>
+
+            <div class="specialties-grid">
+                <div class="specialty-card" *ngFor="let specialty of specialties">
+                    <div class="card-header">
+                        <span class="specialty-icon">{{ specialty.icon }}</span>
+                        <div class="card-actions">
+                            <button class="btn-icon" (click)="openSpecialtyModal(specialty)" title="Editar">✏️</button>
+                            <button class="btn-icon danger" (click)="deleteSpecialty(specialty.id)"
+                                title="Eliminar">🗑️</button>
+                        </div>
+                    </div>
+                    <h3>{{ specialty.name }}</h3>
+                    <p>{{ specialty.description }}</p>
+                    <div class="doctors-count">
+                        <span>👨‍⚕️ {{ specialty.doctors.length }} doctores</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DOCTORES -->
+        <div *ngIf="activeTab === 'doctors'" class="tab-content">
+            <div class="section-header">
+                <button class="btn-primary" (click)="openDoctorModal()">
+                    + Registrar Doctor
+                </button>
+            </div>
+
+            <div class="doctors-table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Teléfono</th>
+                            <th>Especialidad</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let doctor of doctors">
+                            <td>{{ doctor.id }}</td>
+                            <td>{{ doctor.name }}</td>
+                            <td>{{ doctor.email }}</td>
+                            <td>{{ doctor.phone }}</td>
+                            <td><span class="badge">{{ getSpecialtyName(doctor.specialtyId) }}</span></td>
+                            <td class="actions">
+                                <button class="btn-icon" (click)="openDoctorModal(doctor)" title="Editar">✏️</button>
+                                <button class="btn-icon danger" (click)="deleteDoctor(doctor.id)"
+                                    title="Eliminar">🗑️</button>
+                            </td>
+                        </tr>
+                        <tr *ngIf="doctors.length === 0">
+                            <td colspan="6" class="empty-row">No hay doctores registrados</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- FARMACIA -->
+        <div *ngIf="activeTab === 'pharmacy'" class="tab-content">
+            <div class="section-header">
+                <button class="btn-primary" (click)="openProductModal()">
+                    + Nuevo Producto
+                </button>
+            </div>
+
+            <div class="products-grid">
+                <div class="product-card" *ngFor="let product of products">
+                    <div class="card-header">
+                        <span class="product-icon">💊</span>
+                        <div class="card-actions">
+                            <button class="btn-icon" (click)="openProductModal(product)" title="Editar">✏️</button>
+                            <button class="btn-icon danger" (click)="deleteProduct(product.id)"
+                                title="Eliminar">🗑️</button>
+                        </div>
+                    </div>
+                    <h3>{{ product.name }}</h3>
+                    <p class="product-description">{{ product.description }}</p>
+                    <div class="product-details">
+                        <span class="price">💰 S/ {{ product.price }}</span>
+                        <span class="stock" [class.low-stock]="product.stock < 10">📦 Stock: {{ product.stock }}</span>
+                    </div>
+                </div>
+                <div *ngIf="products.length === 0" class="empty-state">
+                    <p>No hay productos registrados</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ANALYTICS -->
+        <div *ngIf="activeTab === 'analytics'" class="tab-content">
+            <div class="analytics-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">🏥</div>
+                    <div class="stat-info">
+                        <h3>Especialidades</h3>
+                        <p class="stat-number">{{ specialties.length }}</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">👨‍⚕️</div>
+                    <div class="stat-info">
+                        <h3>Doctores</h3>
+                        <p class="stat-number">{{ totalDoctors }}</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">💊</div>
+                    <div class="stat-info">
+                        <h3>Productos</h3>
+                        <p class="stat-number">{{ totalProducts }}</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">📦</div>
+                    <div class="stat-info">
+                        <h3>Stock Total</h3>
+                        <p class="stat-number">{{ totalStock }}</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-info">
+                        <h3>Valor Inventario</h3>
+                        <p class="stat-number">S/ {{ totalValue }}</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-info">
+                        <h3>Pacientes Atendidos</h3>
+                        <p class="stat-number">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="charts-section">
+                <h3>Distribución de Doctores por Especialidad</h3>
+                <div class="doctors-distribution">
+                    <div class="distribution-item" *ngFor="let specialty of specialties">
+                        <div class="dist-label">
+                            <span>{{ specialty.icon }} {{ specialty.name }}</span>
+                            <span>{{ specialty.doctors.length }} doctores</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill"
+                                [style.width.%]="(specialty.doctors.length / totalDoctors) * 100 || 0"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- MODAL ESPECIALIDAD -->
+<div class="modal" *ngIf="showSpecialtyModal" (click)="closeModalOnBackdrop($event, 'specialty')">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>{{ editingSpecialty ? 'Editar Especialidad' : 'Nueva Especialidad' }}</h3>
+            <button class="close-btn" (click)="closeSpecialtyModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Nombre</label>
+                <input type="text" [(ngModel)]="specialtyForm.name" class="form-control" placeholder="Ej: Cardiología">
+            </div>
+            <div class="form-group">
+                <label>Icono</label>
+                <select [(ngModel)]="specialtyForm.icon" class="form-control">
+                    <option *ngFor="let icon of availableIcons" [value]="icon">{{ icon }}</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Descripción</label>
+                <textarea [(ngModel)]="specialtyForm.description" class="form-control" rows="3"
+                    placeholder="Descripción de la especialidad"></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" (click)="closeSpecialtyModal()">Cancelar</button>
+            <button class="btn-primary" (click)="saveSpecialty()">Guardar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DOCTOR -->
+<div class="modal" *ngIf="showDoctorModal" (click)="closeModalOnBackdrop($event, 'doctor')">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>{{ editingDoctor ? 'Editar Doctor' : 'Registrar Doctor' }}</h3>
+            <button class="close-btn" (click)="closeDoctorModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Nombre Completo</label>
+                <input type="text" [(ngModel)]="doctorForm.name" class="form-control" placeholder="Ej: Dr. Juan Pérez">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" [(ngModel)]="doctorForm.email" class="form-control"
+                    placeholder="doctor@meditek.com">
+            </div>
+            <div class="form-group">
+                <label>Teléfono</label>
+                <input type="tel" [(ngModel)]="doctorForm.phone" class="form-control" placeholder="987654321">
+            </div>
+            <div class="form-group">
+                <label>Especialidad</label>
+                <select [(ngModel)]="doctorForm.specialtyId" class="form-control">
+                    <option [ngValue]="null">Seleccionar especialidad</option>
+                    <option *ngFor="let specialty of specialties" [value]="specialty.id">{{ specialty.icon }} {{
+                        specialty.name }}</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" (click)="closeDoctorModal()">Cancelar</button>
+            <button class="btn-primary" (click)="saveDoctor()">Guardar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL PRODUCTO -->
+<div class="modal" *ngIf="showProductModal" (click)="closeModalOnBackdrop($event, 'product')">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>{{ editingProduct ? 'Editar Producto' : 'Nuevo Producto' }}</h3>
+            <button class="close-btn" (click)="closeProductModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Nombre del Producto</label>
+                <input type="text" [(ngModel)]="productForm.name" class="form-control"
+                    placeholder="Ej: Paracetamol 500mg">
+            </div>
+            <div class="form-group">
+                <label>Precio (S/)</label>
+                <input type="number" [(ngModel)]="productForm.price" class="form-control" placeholder="0.00">
+            </div>
+            <div class="form-group">
+                <label>Stock</label>
+                <input type="number" [(ngModel)]="productForm.stock" class="form-control" placeholder="0">
+            </div>
+            <div class="form-group">
+                <label>Descripción</label>
+                <textarea [(ngModel)]="productForm.description" class="form-control" rows="3"
+                    placeholder="Descripción del producto"></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" (click)="closeProductModal()">Cancelar</button>
+            <button class="btn-primary" (click)="saveProduct()">Guardar</button>
+        </div>
+    </div>
+</div>
