@@ -4,12 +4,22 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/app",
+    "rootDir": "./src",// Se ha agregado por un error de version typescript
     "types": []
   },
-  "include": [
-    "src/**/*.ts"
+//---------
+  "files":[
+    "src/main.ts"
   ],
-  "exclude": [
-    "src/**/*.spec.ts"
+  "include": [
+    "src/**/*.d.ts"
   ]
+
+  //"include": [
+  //  "src/**/*.ts"
+  //],
+  //"exclude": [
+  //  "src/**/*.spec.ts"
+  //]
+
 }
