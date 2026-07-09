@@ -1,0 +1,372 @@
+.login-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #e0f7fa 0%, #b2dfdb 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.1)" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,154.7C960,171,1056,181,1152,165.3C1248,149,1344,107,1392,85.3L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+        background-size: cover;
+        opacity: 0.2;
+    }
+}
+
+.login-card {
+    background: white;
+    border-radius: 24px;
+    padding: 56px 48px;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+    position: relative;
+    z-index: 1;
+    animation: fadeInUp 0.5s ease-out;
+}
+
+
+.brand-section {
+    text-align: center;
+    margin-bottom: 48px;
+
+    .logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin-bottom: 24px;
+
+        .logo-text {
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #0A6E5E 0%, #1A8F7A 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+    }
+
+    .title {
+        font-size: 36px;
+        font-weight: 600;
+        color: #2C3E50;
+        margin: 0 0 12px 0;
+    }
+
+    .subtitle {
+        font-size: 16px;
+        color: #7F8C8D;
+        margin: 0;
+    }
+}
+
+.btn-google {
+    width: 100%;
+    padding: 14px;
+    background: white;
+    border: 2px solid #E0E0E0;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 16px;
+    font-weight: 500;
+    color: #2C3E50;
+
+    &:hover:not(:disabled) {
+        background: #F8F9FA;
+        border-color: #0A6E5E;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    &:active:not(:disabled) {
+        transform: translateY(0);
+    }
+
+    &:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+}
+
+.error-message {
+    margin-top: 24px;
+    padding: 12px 16px;
+    background: #FEE2E2;
+    border: 1px solid #FCA5A5;
+    border-radius: 10px;
+    color: #DC2626;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: shake 0.3s ease-out;
+
+    .error-icon {
+        font-size: 18px;
+    }
+}
+
+.footer {
+    margin-top: 48px;
+    text-align: center;
+    font-size: 13px;
+    color: #95A5A6;
+}
+
+// Modal styles
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s;
+    backdrop-filter: blur(4px);
+
+    .modal-content {
+        background: white;
+        border-radius: 20px;
+        width: 90%;
+        max-width: 500px;
+        animation: slideUp 0.3s;
+        overflow: hidden;
+
+        .modal-header {
+            padding: 24px 28px;
+            background: linear-gradient(135deg, #0A6E5E 0%, #1A8F7A 100%);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            h3 {
+                margin: 0;
+                color: white;
+                font-size: 22px;
+                font-weight: 600;
+            }
+
+            .close-btn {
+                background: rgba(255, 255, 255, 0.2);
+                border: none;
+                font-size: 28px;
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                color: white;
+                transition: all 0.2s;
+
+                &:hover {
+                    background: rgba(255, 255, 255, 0.3);
+                    transform: rotate(90deg);
+                }
+            }
+        }
+
+        .modal-body {
+            padding: 28px;
+
+            p {
+                margin: 0 0 24px 0;
+                color: #555;
+                font-size: 14px;
+            }
+
+            .form-group {
+                margin-bottom: 20px;
+
+                label {
+                    display: block;
+                    font-size: 14px;
+                    font-weight: 600;
+                    color: #2C3E50;
+                    margin-bottom: 8px;
+                }
+
+                .form-control {
+                    width: 100%;
+                    padding: 12px 16px;
+                    border: 2px solid #E0E0E0;
+                    border-radius: 10px;
+                    font-size: 15px;
+                    transition: all 0.2s;
+                    outline: none;
+
+                    &:focus {
+                        border-color: #0A6E5E;
+                        box-shadow: 0 0 0 3px rgba(10, 110, 94, 0.1);
+                    }
+                }
+            }
+        }
+
+        .modal-footer {
+            padding: 20px 28px;
+            border-top: 1px solid #E0E0E0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+
+            button {
+                padding: 10px 24px;
+                border-radius: 8px;
+                font-size: 14px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.2s;
+
+                &.btn-secondary {
+                    background: white;
+                    border: 1px solid #E0E0E0;
+                    color: #666;
+
+                    &:hover {
+                        background: #F8F9FA;
+                        border-color: #BBB;
+                    }
+                }
+
+                &.btn-primary {
+                    background: linear-gradient(135deg, #0A6E5E 0%, #1A8F7A 100%);
+                    color: white;
+                    border: none;
+
+                    &:hover:not(:disabled) {
+                        transform: translateY(-1px);
+                        box-shadow: 0 4px 12px rgba(10, 110, 94, 0.3);
+                    }
+
+                    &:disabled {
+                        opacity: 0.6;
+                        cursor: not-allowed;
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Spinners
+.spinner {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 0.6s linear infinite;
+}
+
+.spinner-small {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 0.6s linear infinite;
+}
+
+// Animations
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-5px);
+    }
+
+    75% {
+        transform: translateX(5px);
+    }
+}
+
+// Responsive
+@media (max-width: 640px) {
+    .login-card {
+        padding: 40px 28px;
+        margin: 16px;
+    }
+
+    .brand-section {
+        .title {
+            font-size: 28px;
+        }
+
+        .logo-text {
+            font-size: 26px;
+        }
+    }
+
+    .modal .modal-content .modal-header {
+        padding: 20px;
+
+        h3 {
+            font-size: 20px;
+        }
+    }
+}
